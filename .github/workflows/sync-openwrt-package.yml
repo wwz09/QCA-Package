@@ -36,8 +36,8 @@ jobs:
       - name: 检查目标仓库更新
         id: check-update
         run: |
-          # 尝试获取目标仓库的最新提交
-          TARGET_REPO="https://github.com/xuanranran/openwrt-package.git"
+          # 尝试获取目标仓库的最新提交，使用国内代理加速
+          TARGET_REPO="https://ghproxy.com/https://github.com/xuanranran/openwrt-package.git"
           TARGET_BRANCH="main"
           
           # 克隆目标仓库到临时目录

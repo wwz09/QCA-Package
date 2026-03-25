@@ -48,7 +48,7 @@ jobs:
       # 克隆目标仓库内容到临时目录，然后移动到当前目录
       - name: 克隆并同步目标仓库
         run: |
-          TARGET_REPO="https://github.com/xuanranran/openwrt-package.git"
+          TARGET_REPO="https://ghproxy.com/https://github.com/xuanranran/openwrt-package.git"
           TEMP_CLONE_DIR="temp_clone"
           
           # 清理临时目录
@@ -70,8 +70,8 @@ jobs:
       # 记录同步历史
       - name: 记录同步历史
         run: |
-          # 获取目标仓库的最新提交
-          TARGET_REPO="https://github.com/xuanranran/openwrt-package.git"
+          # 获取目标仓库的最新提交，使用国内代理加速
+          TARGET_REPO="https://ghproxy.com/https://github.com/xuanranran/openwrt-package.git"
           git ls-remote $TARGET_REPO HEAD | cut -f1 > .sync_history
           echo "同步历史记录完成"
 
