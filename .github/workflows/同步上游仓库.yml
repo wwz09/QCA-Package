@@ -40,10 +40,10 @@ jobs:
           TARGET_REPO="https://github.com/kenzok8/jell.git"
           TARGET_BRANCH="main"
           
-          # 克隆目标仓库到临时目录
-          mkdir -p temp_target_repo
+          # 清理并克隆目标仓库到临时目录
+          rm -rf temp_target_repo
+          git clone --depth 1 $TARGET_REPO temp_target_repo
           cd temp_target_repo
-          git clone --depth 1 $TARGET_REPO .
           
           # 获取目标仓库的最新提交哈希
           TARGET_LAST_COMMIT=$(git rev-parse HEAD)
