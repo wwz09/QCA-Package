@@ -48,7 +48,7 @@ jobs:
       # 克隆目标仓库内容到临时目录，然后移动到当前目录
       - name: 克隆并同步目标仓库
         run: |
-          TARGET_REPO="https://github.com/xuanranran/openwrt-package.git"
+          TARGET_REPO="https://github.com/kenzok8/jell.git"
           TEMP_CLONE_DIR="temp_clone"
           
           # 清理临时目录
@@ -71,7 +71,7 @@ jobs:
       - name: 记录同步历史
         run: |
           # 获取目标仓库的最新提交
-          TARGET_REPO="https://github.com/xuanranran/openwrt-package.git"
+          TARGET_REPO="https://github.com/kenzok8/jell.git"
           git ls-remote $TARGET_REPO HEAD | cut -f1 > .sync_history
           echo "同步历史记录完成"
 
@@ -84,7 +84,7 @@ jobs:
             git add .
             
             # 提交变更
-            git commit -m "Initial sync with xuanranran/openwrt-package"
+            git commit -m "Initial sync with kenzok8/jell"
             
             # 推送变更
             git push origin main

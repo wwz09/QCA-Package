@@ -74,7 +74,7 @@ jobs:
       - name: 同步目标仓库内容
         if: steps.check-update.outputs.has_update == 'true'
         run: |
-          TARGET_REPO="https://github.com/xuanranran/openwrt-package.git"
+          TARGET_REPO="https://github.com/kenzok8/jell.git"
           TARGET_BRANCH="main"
           
           # 清空当前目录除了.git和.github的内容
@@ -113,7 +113,7 @@ jobs:
             git add .
             
             # 提交变更
-            git commit -m "Sync with xuanranran/openwrt-package at ${{ steps.check-update.outputs.target_commit }}"
+            git commit -m "Sync with kenzok8/jell at ${{ steps.check-update.outputs.target_commit }}"
             
             # 推送变更
             git push origin main
