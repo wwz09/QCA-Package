@@ -8,14 +8,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coremark
-PKG_VERSION:=2025.05.01~1f483d5b
-PKG_RELEASE:=1
+PKG_SOURCE_DATE:=2025-05-01
+PKG_SOURCE_VERSION:=1f483d5b8316753a742cbf5590caf5bd0a4e4777
+PKG_RELEASE:=22
 
-ifeq ($(CONFIG_USE_MUSL),y)
-  PKG_LIBC:=musl
-else
-  PKG_LIBC:=glibc
-endif
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_SOURCE_DATE).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/eembc/coremark/tar.gz/$(PKG_SOURCE_VERSION)?
+PKG_HASH:=skip
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_SOURCE_VERSION)
+
+PKG_MAINTAINER:=Lim Guo Wei <limguowei@gmail.com>
+PKG_LICENSE:=Apache-2.0
+PKG_LICENSE_FILES:=LICENSE.md
+
+PKG_BUILD_FLAGS:=no-mips16 lto
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -23,7 +29,6 @@ define Package/coremark
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=CoreMark Embedded Microprocessor Benchmark
-  DEPENDS:=@(aarch64||x86_64)
   URL:=https://github.com/eembc/coremark
 endef
 
@@ -31,27 +36,48 @@ define Package/coremark/description
   Embedded Microprocessor Benchmark
 endef
 
-define Package/coremark/conffiles
-/etc/bench.log
+define Package/coremark/config
+	config COREMARK_OPTIMIZE_O3
+		bool "Use all optimizations (-O3)"
+		depends on PACKAGE_coremark
+		default y
+		help
+			This enables additional optmizations using the -O3 compilation flag.
+
+	config COREMARK_ENABLE_MULTITHREADING
+		bool "Enable multithreading support"
+		depends on PACKAGE_coremark
+		default y
+		help
+			This enables multithreading support
+
+	config COREMARK_NUMBER_OF_THREADS
+		int "Number of threads"
+		depends on COREMARK_ENABLE_MULTITHREADING
+		default 16
+		help
+			Number of threads to run in parallel
 endef
 
+ifeq ($(CONFIG_COREMARK_OPTIMIZE_O3),y)
+	TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+endif
+
+ifeq ($(CONFIG_COREMARK_ENABLE_MULTITHREADING),y)
+	EXTRA_CFLAGS := -DMULTITHREAD=$(CONFIG_COREMARK_NUMBER_OF_THREADS) -DUSE_PTHREAD
+endif
+
 define Build/Compile
+	$(SED) 's|EXE = .exe|EXE =|' $(PKG_BUILD_DIR)/posix/core_portme.mak
+	mkdir -p $(PKG_BUILD_DIR)/$(ARCH)
+	$(CP) $(PKG_BUILD_DIR)/linux/* $(PKG_BUILD_DIR)/$(ARCH)/
+	$(MAKE) -C $(PKG_BUILD_DIR) PORT_DIR=$(ARCH) $(MAKE_FLAGS) \
+		PORT_CFLAGS="$(TARGET_CFLAGS)" XCFLAGS="$(EXTRA_CFLAGS)" compile
 endef
 
 define Package/coremark/install
 	$(INSTALL_DIR) $(1)/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_LIBC)/coremark.$(ARCH) $(1)/bin/coremark
-	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_BIN) ./coremark.sh $(1)/etc/
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./coremark $(1)/etc/uci-defaults/xxx-coremark
-endef
-
-define Package/coremark/postinst
-#!/bin/sh
-[ -n "$${IPKG_INSTROOT}" ] || sed -i '/coremark/d' /etc/crontabs/root
-[ -n "$${IPKG_INSTROOT}" ] || echo "0 4 * * * /etc/coremark.sh" >> /etc/crontabs/root
-[ -n "$${IPKG_INSTROOT}" ] || crontab /etc/crontabs/root
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/coremark $(1)/bin/
 endef
 
 $(eval $(call BuildPackage,coremark))

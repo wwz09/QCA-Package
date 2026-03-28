@@ -11,10 +11,10 @@ PKG_ARCH_kai:=$(ARCH)
 
 PKG_NAME:=kai
 PKG_VERSION:=0.0.5
-PKG_RELEASE:=0
+PKG_RELEASE:=3
 PKG_SOURCE:=$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/linkease/istore-packages/releases/download/prebuilt/
-PKG_HASH:=3dc71380e223b433e27a8280ebd7f9c4166d4085f7146db04b7f970efd5576fd
+PKG_HASH:=skip
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-binary-$(PKG_VERSION)
 
 PKG_BUILD_PARALLEL:=1

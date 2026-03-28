@@ -22,8 +22,10 @@ define KernelPackage/oaf/description
   open appfilter kernel module 
 endef
 
-EXTRA_CFLAGS:=-Wno-unused-variable -Wno-unused-function -Wno-missing-prototypes \
-	-Wno-implicit-fallthrough -Wno-missing-braces -Wno-parentheses
+
+EXTRA_CFLAGS:=-Wno-declaration-after-statement -Wno-strict-prototypes -Wno-unused-variable -Wno-implicit-fallthrough -Wno-missing-braces -Wno-parentheses -Wno-format -Wno-missing-prototypes -Wno-missing-declarations
+
+
 
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \

@@ -7,17 +7,14 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Argon Theme
-LUCI_DEPENDS:=+curl +jsonfilter
-PKG_VERSION:=2.5.0
-PKG_RELEASE:=20260223
+LUCI_DEPENDS:=+@wget-any +jsonfilter
 
-define Package/luci-theme-argon/postrm
-#!/bin/sh
-[ -n "$${IPKG_INSTROOT}" ] || {
-	uci -q delete luci.themes.Argon
-	uci set luci.main.mediaurlbase='/luci-static/bootstrap'
-	uci commit luci
-}
+
+LUCI_MINIFY_CSS:=0
+
+define Package/luci-theme-argon/conffiles
+/etc/config/argon
+/www/luci-static/argon/background/
 endef
 
 include $(TOPDIR)/feeds/luci/luci.mk

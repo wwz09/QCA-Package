@@ -1,16 +1,11 @@
 {
 	"luci-app-fileassistant": {
-		"description": "Grant file access permissions for luci-app-fileassistant",
+		"description": "Grant UCI access for luci-app-fileassistant",
 		"read": {
-			"ubus": {
-				"file": ["list", "read"]
-			}
+			"uci": [ "fileassistant" ]
 		},
 		"write": {
-			"ubus": {
-				"file": ["write", "remove"]
-			},
-			"cgi-io": ["upload"]
+			"uci": [ "fileassistant" ]
 		}
 	}
 }

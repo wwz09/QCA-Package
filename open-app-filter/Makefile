@@ -2,8 +2,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=appfilter
-PKG_VERSION:=6.1.6
-PKG_RELEASE:=1
+PKG_VERSION:=6.1.7
+PKG_RELEASE:=34
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
@@ -12,7 +12,7 @@ TARGET_CFLAGS +=-Werror=implicit-function-declaration
 define Package/appfilter
   SECTION:=TT Apps
   CATEGORY:=TT Apps
-  DEPENDS:=+kmod-oaf +libubox +libubus +libuci +libpthread +libjson-c +libblobmsg-json
+  DEPENDS:=+libubox +libubus +libuci +libpthread +libjson-c +libblobmsg-json
   TITLE:=OAF client and config service
 endef
 
@@ -47,7 +47,7 @@ define Package/appfilter/install
 	$(INSTALL_DIR) $(1)/usr/bin $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/appfilter
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/feature.cfg $(1)/etc/appfilter/
+	$(CP) ./files/*.cfg $(1)/etc/appfilter/ 
 	$(INSTALL_BIN) ./files/appfilter.init $(1)/etc/init.d/appfilter
 	$(INSTALL_BIN) ./files/oaf_rule $(1)/usr/bin
 	$(INSTALL_BIN) ./files/gen_class.sh $(1)/usr/bin

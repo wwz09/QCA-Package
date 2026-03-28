@@ -11,10 +11,10 @@ PKG_ARCH_quickstart:=$(ARCH)
 
 PKG_NAME:=quickstart
 PKG_VERSION:=0.11.14
-PKG_RELEASE:=1
+PKG_RELEASE:=123
 PKG_SOURCE:=$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/linkease/istore-packages/releases/download/prebuilt/
-PKG_HASH:=9b018ec3808ec49c423e1bd68b0500a8499bf80aa65c245cb45835a9292ae5a1
+PKG_HASH:=skip
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-binary-$(PKG_VERSION)
 

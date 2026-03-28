@@ -7,70 +7,52 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=clouddrive2
-PKG_VERSION:=1.0.2
-PKG_RELEASE:=1
+PKG_VERSION:=0.9.17
+PKG_RELEASE=1
 
-PKG_MAINTAINER:=Hannibal
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH:=aarch64
+	PKG_HASH:=skip
+else ifeq ($(ARCH),arm)
+	PKG_ARCH:=armv7
+	PKG_HASH:=skip
+else ifeq ($(ARCH),x86_64)
+	PKG_ARCH:=x86_64
+	PKG_HASH:=skip
+endif
 
 include $(INCLUDE_DIR)/package.mk
-
-ifeq ($(ARCH),x86_64)
-  PKG_ARCH_Ctl:=x86_64
-  PKG_HASH:=32b10766ef25c5d4ab8ffdb1f1b700d2b9d229760f63bbedbe62356bc0c17bf4
-endif
-ifeq ($(ARCH),aarch64)
-  PKG_ARCH_Ctl:=aarch64
-  PKG_HASH:=d79d1b527f19b769ca4ccd6b4b372db0c583c6b931dec935eda33636eb211f28
-endif
-ifeq ($(ARCH),arm)
-  PKG_ARCH_Ctl:=armv7
-  PKG_HASH:=c5249c840d2f03233ef7262dc4f8249bff8f13f7acd1fca60f867e060584a315
-endif
 
 define Package/clouddrive2
   SECTION:=net
   CATEGORY:=Network
-  SUBMENU:=Cloud Manager
+  DEPENDS:=@(arm||aarch64||x86_64) +fuse-utils
   TITLE:=CloudDrive2
-  URL:=https://www.clouddrive2.com/
-  DEPENDS:=@(arm||aarch64||x86_64) +fuse-utils +ca-bundle
 endef
 
 define Package/clouddrive2/description
   CloudDrive2 is a cloud storage mounting tool for OpenWrt.
 endef
 
-define Download/clouddrive2
-  URL:=https://github.com/cloud-fs/cloud-fs.github.io/releases/download/v$(PKG_VERSION)
-  URL_FILE:=clouddrive-2-linux-$(PKG_ARCH_Ctl)-$(PKG_VERSION).tgz
-  FILE:=clouddrive-2-linux-$(PKG_ARCH_Ctl)-$(PKG_VERSION).tgz
-  HASH:=$(PKG_HASH)
-endef
+PKG_SOURCE:=clouddrive-2-linux-$(PKG_ARCH)-$(PKG_VERSION).tgz
+PKG_SOURCE_URL:=https://github.com/cloud-fs/cloud-fs.github.io/releases/download/v$(PKG_VERSION)
 
 define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
-	tar -xzvf $(DL_DIR)/clouddrive-2-linux-$(PKG_ARCH_Ctl)-$(PKG_VERSION).tgz -C $(PKG_BUILD_DIR)/
-	# Move files from subfolder to root if they exist in a subfolder
-	if [ -d "$(PKG_BUILD_DIR)/clouddrive-2-linux-$(PKG_ARCH_Ctl)-$(PKG_VERSION)" ]; then \
-		mv $(PKG_BUILD_DIR)/clouddrive-2-linux-$(PKG_ARCH_Ctl)-$(PKG_VERSION)/* $(PKG_BUILD_DIR)/; \
-		rmdir $(PKG_BUILD_DIR)/clouddrive-2-linux-$(PKG_ARCH_Ctl)-$(PKG_VERSION); \
-	fi
-	ls -al $(PKG_BUILD_DIR)/
+	$(call Build/Prepare/Default)
+	tar -xzvf $(DL_DIR)/clouddrive-2-linux-$(PKG_ARCH)-$(PKG_VERSION).tgz -C $(PKG_BUILD_DIR)/ --strip-components=1
 endef
 
 define Build/Compile
 endef
 
 define Package/clouddrive2/install
-	$(INSTALL_DIR) $(1)/bg/clouddrive2
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/clouddrive2.init $(1)/etc/init.d/clouddrive2
+	$(INSTALL_BIN) $(CURDIR)/files/clouddrive2.init $(1)/etc/init.d/clouddrive2
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) ./files/clouddrive2.config $(1)/etc/config/clouddrive2
+	$(INSTALL_CONF) $(CURDIR)/files/clouddrive2.config $(1)/etc/config/clouddrive2
 	$(INSTALL_DIR) $(1)/usr/share/clouddrive2
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/clouddrive $(1)/usr/share/clouddrive2/
-	cp -rf $(PKG_BUILD_DIR)/wwwroot $(1)/usr/share/clouddrive2/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/clouddrive-2-linux-$(PKG_ARCH)-$(PKG_VERSION)/clouddrive $(1)/usr/share/clouddrive2/
+	cp -rf $(PKG_BUILD_DIR)/clouddrive-2-linux-$(PKG_ARCH)-$(PKG_VERSION)/wwwroot $(1)/usr/share/clouddrive2/
 endef
 
-$(eval $(call Download,clouddrive2))
 $(eval $(call BuildPackage,clouddrive2))
